@@ -1,0 +1,10 @@
+**/__pycache__
+**/.pytest_cache
+**/*.pyc
+**/.mypy_cache
+**/.vscode
+**/.idea
+**/.vscode
+**/dist
+.DS_Store
+**/.DS_Store
