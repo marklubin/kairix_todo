@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Task Manager</title>
+</head>
+<body>
+    <h1>Tasks</h1>
+
+    <form id="taskForm">
+        <input type="text" id="taskTitle" placeholder="Task Title" required />
+        <input type="text" id="taskTags" placeholder="Tags (comma-separated)" />
+        <button type="submit">Add Task</button>
+    </form>
+
+    <ul id="tasksList"></ul>
+
+<script>
+async function fetchTasks() {
+    const response = await fetch("/tasks/");
+    const tasks = await response.json();
+
+    const list = document.getElementById('tasksList');
+    list.innerHTML = '';
+
+    tasks.forEach(task => {
+        const item = document.createElement('li');
+        item.textContent = task.title + (task.completed ? ' ✅' : '');
+
+        const completeBtn = document.createElement('button');
+        completeBtn.textContent = 'Mark Complete';
+        completeBtn.onclick = () => markComplete(task.id);
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.onclick = () => deleteTask(task.id);
+
+        item.appendChild(completeBtn);
+        item.appendChild(deleteBtn);
+        list.appendChild(item);
+    });
+}
+
+async function addTask(event) {
+    event.preventDefault();
+    const title = document.getElementById('taskTitle').value;
+    const tags = document.getElementById('taskTags').value.split(',').map(s => s.trim()).filter(Boolean);
+
+    await fetch("/tasks/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, tags })
+    });
+
+    document.getElementById('taskForm').reset();
+    fetchTasks();
+}
+
+async function markComplete(taskId) {
+    await fetch(`/tasks/${taskId}/complete`, { method: "PATCH" });
+    fetchTasks();
+}
+
+async function deleteTask(taskId) {
+    await fetch(`/tasks/${taskId}`, { method: "DELETE" });
+    fetchTasks();
+}
+
+document.getElementById('taskForm').onsubmit = addTask;
+
+// Load tasks initially
+fetchTasks();
+</script>
+
+</body>
+</html>

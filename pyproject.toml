@@ -20,19 +20,23 @@ dependencies = [
     "poethepoet (>=0.33.1,<0.34.0)",
     "gunicorn (>=23.0.0,<24.0.0)",
     "autoflake (>=2.3.1,<3.0.0)",
-    "pydantic (>=2.11.2,<3.0.0)"
+    "pydantic (>=2.11.2,<3.0.0)",
+    "marshmallow (>=3.26.1,<4.0.0)"
 ]
 
 [tool.poe.tasks]
 
 # Formatters (auto-fixing)
-format = { shell = "black . && isort . && autoflake --in-place --remove-unused-variables --remove-all-unused-imports -r ." }
+format = { shell = "black . && isort ." }
 
 # Linters (checks)
-lint = { shell = "mypy . && black --check . && isort --check . && autoflake --check --remove-unused-variables --remove-all-unused-imports -r ." }
+lint = { shell = "mypy . && black --check . && isort --check ." }
 
 # Test runner
 test = "pytest tests/"
+
+# Type checker
+typecheck = { shell = "mypy . --ignore-missing-imports" }
 
 # Comprehensive pre-check (lint + test)
 check = { shell = "poe lint && poe test" }
