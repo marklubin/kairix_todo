@@ -45,7 +45,7 @@ check = { shell = "poe lint && poe test" }
 dev = { shell = "FLASK_ENV=development FLASK_APP=src/kairix_todo/app.py flask run" }
 
 # Flask production server (gunicorn recommended)
-prod = { shell = "gunicorn 'src.kairix_todo.app:app'" }
+prod = { shell = "gunicorn --pythonpath src kairix_todo.app:app --bind 0.0.0.0:8752" }
 
 
 [build-system]
