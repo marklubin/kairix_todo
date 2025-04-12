@@ -59,12 +59,27 @@ class Task(Base):
     tags: Mapped[List[Tag]] = relationship(
         "Tag", secondary=task_tags, back_populates="tasks"
     )
+    reminders: Mapped[List["Reminder"]] = relationship("Reminder", back_populates="task")
 
     @validates("title")
     def validate_title(self, key, value):
         if not value or not value.strip():
             raise ValueError("Title cannot be empty")
         return value
+
+
+# Reminder model
+class Reminder(Base):
+    __tablename__ = "reminders"
+
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid.uuid4())
+    )
+    task_id: Mapped[str] = mapped_column(String, ForeignKey("tasks.id"), nullable=False)
+    remind_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    completed: Mapped[bool] = mapped_column(Boolean, default=False)
+
+    task: Mapped["Task"] = relationship("Task", back_populates="reminders")
 
 
 # Marshmallow schemas
@@ -90,3 +105,14 @@ class TaskSchema(Schema):
     @post_load
     def make_task(self, data, **kwargs):
         return Task(**data)
+
+
+class ReminderSchema(Schema):
+    id = fields.Str(dump_only=True)
+    task_id = fields.Str(required=True)
+    remind_at = fields.DateTime(required=True)
+    completed = fields.Bool()
+
+    @post_load
+    def make_reminder(self, data, **kwargs):
+        return Reminder(**data)
