@@ -1,5 +1,6 @@
 from datetime import datetime
-from kairix_todo.models import Tag, Task, Reminder
+
+from kairix_todo.models import Reminder, Tag, Task
 
 
 def test_create_task(client, db_session):
@@ -94,8 +95,7 @@ def test_list_task_reminders(client, db_session):
     db_session.commit()
 
     reminder = Reminder(
-        task_id=task.id,
-        remind_at=datetime.fromisoformat("2023-10-10T10:00:00")
+        task_id=task.id, remind_at=datetime.fromisoformat("2023-10-10T10:00:00")
     )
     db_session.add(reminder)
     db_session.commit()
@@ -112,8 +112,7 @@ def test_create_task_reminder(client, db_session):
     db_session.commit()
 
     response = client.post(
-        f"/tasks/{task.id}/reminders",
-        json={"remind_at": "2023-10-10T10:00:00"}
+        f"/tasks/{task.id}/reminders", json={"remind_at": "2023-10-10T10:00:00"}
     )
     assert response.status_code == 201
     data = response.get_json()
@@ -126,15 +125,13 @@ def test_update_reminder(client, db_session):
     db_session.commit()
 
     reminder = Reminder(
-        task_id=task.id,
-        remind_at=datetime.fromisoformat("2023-10-10T10:00:00")
+        task_id=task.id, remind_at=datetime.fromisoformat("2023-10-10T10:00:00")
     )
     db_session.add(reminder)
     db_session.commit()
 
     response = client.put(
-        f"/tasks/reminders/{reminder.id}",
-        json={"remind_at": "2023-10-11T10:00:00"}
+        f"/tasks/reminders/{reminder.id}", json={"remind_at": "2023-10-11T10:00:00"}
     )
     assert response.status_code == 200
     data = response.get_json()
@@ -147,8 +144,7 @@ def test_delete_reminder(client, db_session):
     db_session.commit()
 
     reminder = Reminder(
-        task_id=task.id,
-        remind_at=datetime.fromisoformat("2023-10-10T10:00:00")
+        task_id=task.id, remind_at=datetime.fromisoformat("2023-10-10T10:00:00")
     )
     db_session.add(reminder)
     db_session.commit()

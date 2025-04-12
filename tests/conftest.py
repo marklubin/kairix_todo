@@ -1,6 +1,6 @@
-from typing import Generator
-import sys
 import os
+import sys
+from typing import Generator
 
 import pytest
 from flask import Flask
@@ -9,10 +9,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 # Add kairix_todo to the Python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-from kairix_todo.controller.task_controller import TaskController
 from kairix_todo.controller.tag_controller import TagController
+from kairix_todo.controller.task_controller import TaskController
 from kairix_todo.models import Base
 
 
@@ -20,11 +20,11 @@ from kairix_todo.models import Base
 def app(db_session: Session) -> Generator[Flask, None, None]:
     app = Flask(__name__)
     app.config["TESTING"] = True
-    
+
     # Register both controllers
     task_controller = TaskController(db_session)
     tag_controller = TagController(db_session)
-    
+
     app.register_blueprint(task_controller.blueprint)
     app.register_blueprint(tag_controller.blueprint)
 

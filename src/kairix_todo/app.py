@@ -2,8 +2,8 @@ from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-from kairix_todo.controller.task_controller import TaskController
 from kairix_todo.controller.tag_controller import TagController
+from kairix_todo.controller.task_controller import TaskController
 from kairix_todo.models import Base
 
 app = Flask(__name__)
@@ -17,19 +17,19 @@ with app.app_context():
     session_factory = sessionmaker(bind=db.engine)
     Session = scoped_session(session_factory)
     session = Session()
-    
+
     # Register both controllers
     task_controller = TaskController(session)
     tag_controller = TagController(session)
-    
+
     app.register_blueprint(task_controller.blueprint)
     app.register_blueprint(tag_controller.blueprint)
-    
+
     db.create_all()
 
 
 @app.route("/")
-def health():
+def health() -> dict:
     return {"status": "running"}
 
 

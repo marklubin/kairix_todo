@@ -3,10 +3,14 @@ from datetime import date, datetime
 from typing import List
 
 from marshmallow import Schema, fields, post_load, validate
-from sqlalchemy import (Boolean, Column, Date, DateTime, ForeignKey, String,
-                        Table)
-from sqlalchemy.orm import (DeclarativeBase, Mapped, mapped_column,
-                            relationship, validates)
+from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, String, Table
+from sqlalchemy.orm import (
+    DeclarativeBase,
+    Mapped,
+    mapped_column,
+    relationship,
+    validates,
+)
 
 
 # Base setup
@@ -37,7 +41,7 @@ class Tag(Base):
     )
 
     @validates("name")
-    def validate_name(self, key, value):
+    def validate_name(self, key: str, value: str) -> str:
         if not value or not value.strip():
             raise ValueError("Tag name cannot be empty")
         return value
@@ -59,10 +63,12 @@ class Task(Base):
     tags: Mapped[List[Tag]] = relationship(
         "Tag", secondary=task_tags, back_populates="tasks"
     )
-    reminders: Mapped[List["Reminder"]] = relationship("Reminder", back_populates="task")
+    reminders: Mapped[List["Reminder"]] = relationship(
+        "Reminder", back_populates="task"
+    )
 
     @validates("title")
-    def validate_title(self, key, value):
+    def validate_title(self, key: str, value: str) -> str:
         if not value or not value.strip():
             raise ValueError("Title cannot be empty")
         return value

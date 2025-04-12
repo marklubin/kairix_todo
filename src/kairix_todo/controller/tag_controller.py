@@ -41,8 +41,9 @@ class TagController:
             abort(404, description="Tag not found.")
 
         data = request.json
-        for key, value in data.items():
-            setattr(tag, key, value)
+        if data:  # Check if data is not empty
+            for key, value in data.items():
+                setattr(tag, key, value)
 
         self.session.commit()
         return jsonify(self.tag_schema.dump(tag)), 200

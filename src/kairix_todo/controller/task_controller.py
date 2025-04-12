@@ -1,8 +1,9 @@
 from datetime import datetime
+
 from flask import Blueprint, abort, jsonify, request
 from sqlalchemy.orm import Session
 
-from kairix_todo.models import (Reminder, ReminderSchema, Tag, Task, TaskSchema)
+from kairix_todo.models import Reminder, ReminderSchema, Tag, Task, TaskSchema
 
 
 class TaskController:
@@ -51,6 +52,9 @@ class TaskController:
 
     def create_task(self):
         data = request.json
+        if data is None:  # Check if data is not None
+            abort(400, description="Invalid input data.")
+
         tag_names = data.pop("tags", [])
         tags = self.get_or_create_tags(tag_names)
 
@@ -78,9 +82,11 @@ class TaskController:
             abort(404, description="Task not found.")
 
         data = request.json
-        tag_names = data.pop("tags", None)
+        if data is None:  # Check if data is not None
+            abort(400, description="Invalid input data.")
 
-        if tag_names is not None:
+        tag_names = data.pop("tags", [])
+        if tag_names:  # Check if tag_names is not empty
             task.tags = self.get_or_create_tags(tag_names)
 
         for key, value in data.items():
@@ -138,9 +144,16 @@ class TaskController:
             abort(404, description="Task not found.")
 
         data = request.json
-        # Convert string datetime to Python datetime
-        if isinstance(data.get("remind_at"), str):
-            data["remind_at"] = datetime.fromisoformat(data["remind_at"].replace("Z", "+00:00"))
+        if data.get("remind_at") is not None:
+            if isinstance(data.get("remind_at"), str):
+                data["remind_at"] = datetime.fromisoformat(
+                    data["remind_at"].replace("Z", "+00:00")
+                )
+            else:
+                abort(
+                    400,
+                    description="Invalid remind_at format. Expected ISO 8601 string.",
+                )
 
         reminder = Reminder(**data)
         reminder.task_id = task_id
@@ -155,9 +168,13 @@ class TaskController:
             abort(404, description="Reminder not found.")
 
         data = request.json
-        # Convert string datetime to Python datetime
+        if data is None:  # Check if data is not None
+            abort(400, description="Invalid input data.")
+
         if isinstance(data.get("remind_at"), str):
-            data["remind_at"] = datetime.fromisoformat(data["remind_at"].replace("Z", "+00:00"))
+            data["remind_at"] = datetime.fromisoformat(
+                data["remind_at"].replace("Z", "+00:00")
+            )
 
         for key, value in data.items():
             setattr(reminder, key, value)
