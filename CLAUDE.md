@@ -70,31 +70,98 @@ If you're unsure, **ask before proceeding**.
 
 ---
 
-## 🧰 Development Commands
+## 🧰 Development Commands with Poetry
 
-Use these commands to develop and test the application:
+This project uses Poetry for dependency management and build processes. Use these commands to develop and test the application:
 
 ```bash
 # Setup the environment
-cd /home/mark/kairix-mem/sample-apps/todo-api
-python -m venv .venv
-source .venv/bin/activate
+cd /home/mark/kairix_todo
+poetry install
 
-# Install dependencies
-uv add fastapi pydantic sqlalchemy alembic uvicorn pytest pytest-cov
+# Activate the virtual environment
+poetry shell
 
 # Run linting and formatting
-uv run lint
+poetry run poe format  # Auto-fixes formatting issues
+poetry run poe lint    # Checks code quality without modifying
 
 # Run type checking
-uv run typecheck
+poetry run poe typecheck
 
 # Run tests
-uv run test
+poetry run poe test
+
+# Run comprehensive checks (lint + test)
+poetry run poe check
 
 # Run the development server
-uv run dev
+poetry run poe dev
+
+# Run the production server
+poetry run poe prod
 ```
+
+## 🌿 Branch and PR Workflow
+
+### Branch Naming Convention
+- Feature branches: `feature/short-description`
+- Bug fixes: `fix/issue-description`
+- Documentation: `docs/what-changed`
+- Tests: `test/what-tested`
+
+### Development Workflow
+1. **Create a new branch** from main:
+   ```bash
+   git checkout main
+   git pull
+   git checkout -b feature/your-feature-name
+   ```
+
+2. **Develop using TDD**:
+   - Write failing tests first
+   - Implement the minimal code to make tests pass
+   - Refactor while maintaining passing tests
+
+3. **Commit regularly** with descriptive messages:
+   ```bash
+   git add .
+   git commit -m "feat: implement search controller"
+   ```
+   Follow [Conventional Commits](https://www.conventionalcommits.org/) format.
+
+4. **Run quality checks** before submitting:
+   ```bash
+   poetry run poe check
+   ```
+
+5. **Push your branch**:
+   ```bash
+   git push -u origin feature/your-feature-name
+   ```
+
+6. **Create a Pull Request** with:
+   - Clear description of changes
+   - Reference to any related issues
+   - Test coverage information
+   - Any deployment considerations
+
+7. **Address review feedback** promptly
+
+8. **Merge** once approved and CI passes
+
+## 🔍 Quality Standards
+
+All code must meet these standards before merging:
+
+1. **100% test coverage** for new code
+2. **All tests passing**
+3. **No linting errors** (black, isort, mypy)
+4. **Comprehensive documentation**:
+   - Docstrings for all public functions and classes
+   - Updated README if necessary
+   - API documentation if endpoints changed
+5. **Type annotations** for all functions and variables
 
 ---
 
