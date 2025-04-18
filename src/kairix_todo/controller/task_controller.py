@@ -24,7 +24,6 @@ class TaskController:
         self.blueprint.route("/<task_id>", methods=["DELETE"])(self.delete_task)
         self.blueprint.route("/<task_id>", methods=["GET"])(self.get_task)
         self.blueprint.route("/", methods=["GET"])(self.list_tasks)
-        self.blueprint.route("/search", methods=["GET"])(self.search_tasks)
         self.blueprint.route("/<task_id>/reminders", methods=["GET"])(
             self.list_task_reminders
         )
@@ -114,20 +113,6 @@ class TaskController:
 
     def list_tasks(self):
         tasks = self.session.query(Task).all()
-        return jsonify(self.tasks_schema.dump(tasks)), 200
-
-    def search_tasks(self):
-        query = request.args.get("q")
-        skip = request.args.get("skip", default=0, type=int)
-        limit = request.args.get("limit", default=100, type=int)
-
-        tasks = (
-            self.session.query(Task)
-            .filter(Task.title.contains(query))
-            .offset(skip)
-            .limit(limit)
-            .all()
-        )
         return jsonify(self.tasks_schema.dump(tasks)), 200
 
     def list_task_reminders(self, task_id: str):

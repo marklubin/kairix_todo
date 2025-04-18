@@ -5,6 +5,521 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/tasks": {
+      "get": {
+        "summary": "List all tasks",
+        "responses": {
+          "200": {
+            "description": "A list of all tasks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Task"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new task",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "additional_details": {
+                    "type": "string"
+                  },
+                  "due_date": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": ["title"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created task",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data"
+          }
+        }
+      }
+    },
+    "/tasks/{task_id}": {
+      "get": {
+        "summary": "Get a task by ID",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requested task",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Task not found"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update a task",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "additional_details": {
+                    "type": "string"
+                  },
+                  "completed": {
+                    "type": "boolean"
+                  },
+                  "due_date": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated task",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data"
+          },
+          "404": {
+            "description": "Task not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a task",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Task deleted successfully"
+          },
+          "404": {
+            "description": "Task not found"
+          }
+        }
+      }
+    },
+    "/tasks/{task_id}/complete": {
+      "patch": {
+        "summary": "Mark a task as completed",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The completed task",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Task not found"
+          }
+        }
+      }
+    },
+    "/tasks/{task_id}/reminders": {
+      "get": {
+        "summary": "List all reminders for a task",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of reminders for the task",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Reminder"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Task not found"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new reminder for a task",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "remind_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                },
+                "required": ["remind_at"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created reminder",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Reminder"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data"
+          },
+          "404": {
+            "description": "Task not found"
+          }
+        }
+      }
+    },
+    "/tasks/reminders/{reminder_id}": {
+      "put": {
+        "summary": "Update a reminder",
+        "parameters": [
+          {
+            "name": "reminder_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "remind_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "completed": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated reminder",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Reminder"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data"
+          },
+          "404": {
+            "description": "Reminder not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a reminder",
+        "parameters": [
+          {
+            "name": "reminder_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Reminder deleted successfully"
+          },
+          "404": {
+            "description": "Reminder not found"
+          }
+        }
+      }
+    },
+    "/tags": {
+      "get": {
+        "summary": "List all tags",
+        "responses": {
+          "200": {
+            "description": "A list of all tags",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Tag"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new tag",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": ["name"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created tag",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data"
+          }
+        }
+      }
+    },
+    "/tags/{tag_id}": {
+      "get": {
+        "summary": "Get a tag by ID",
+        "parameters": [
+          {
+            "name": "tag_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requested tag",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tag not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a tag",
+        "parameters": [
+          {
+            "name": "tag_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated tag",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data"
+          },
+          "404": {
+            "description": "Tag not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a tag",
+        "parameters": [
+          {
+            "name": "tag_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Tag deleted successfully"
+          },
+          "404": {
+            "description": "Tag not found"
+          }
+        }
+      }
+    },
     "/tasks/search": {
       "get": {
         "summary": "Search for tasks",
@@ -13,57 +528,38 @@
             "name": "q",
             "in": "query",
             "required": false,
-            "description": "Full-text search query",
+            "description": "Search query for task title and additional details",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "due_date",
+            "name": "from_date",
             "in": "query",
             "required": false,
-            "description": "Filter tasks by due date (YYYY-MM-DD)",
+            "description": "Filter tasks due on or after this date (YYYY-MM-DD)",
             "schema": {
               "type": "string",
               "format": "date"
             }
           },
           {
-            "name": "created_date",
+            "name": "to_date",
             "in": "query",
             "required": false,
-            "description": "Filter tasks by creation date (YYYY-MM-DD)",
+            "description": "Filter tasks due on or before this date (YYYY-MM-DD)",
             "schema": {
               "type": "string",
               "format": "date"
             }
           },
           {
-            "name": "tags",
+            "name": "completed",
             "in": "query",
             "required": false,
-            "description": "Comma-separated list of tags to filter tasks",
+            "description": "Filter tasks by completion status (true or false)",
             "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "sort_by",
-            "in": "query",
-            "required": false,
-            "description": "Field to sort by (e.g., due_date, created_date, title)",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "sort_order",
-            "in": "query",
-            "required": false,
-            "description": "Order of sorting (asc or desc)",
-            "schema": {
-              "type": "string",
-              "enum": ["asc", "desc"]
+              "type": "boolean"
             }
           },
           {
@@ -93,23 +589,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "tasks": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Task"
-                      }
-                    },
-                    "total": {
-                      "type": "integer"
-                    },
-                    "limit": {
-                      "type": "integer"
-                    },
-                    "offset": {
-                      "type": "integer"
-                    }
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Task"
                   }
                 }
               }
@@ -121,6 +603,35 @@
   },
   "components": {
     "schemas": {
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "Reminder": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "task_id": {
+            "type": "string"
+          },
+          "remind_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "completed": {
+            "type": "boolean"
+          }
+        }
+      },
       "Task": {
         "type": "object",
         "properties": {
@@ -130,7 +641,7 @@
           "title": {
             "type": "string"
           },
-          "description": {
+          "additional_details": {
             "type": "string"
           },
           "completed": {
@@ -142,12 +653,12 @@
           },
           "due_date": {
             "type": "string",
-            "format": "date-time"
+            "format": "date"
           },
-          "tags": {
+          "reminders": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/Reminder"
             }
           }
         }
