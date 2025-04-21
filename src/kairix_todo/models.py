@@ -3,10 +3,14 @@ from datetime import date, datetime
 
 from marshmallow import Schema, fields, post_load
 from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Index, String, Table
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, validates
+from sqlalchemy.orm import DeclarativeBase, relationship, validates
 
-Base = declarative_base()
+
+class Base(DeclarativeBase):
+    """Declarative base class for SQLAlchemy models."""
+
+    pass
+
 
 # Association table for many-to-many relationship between Task and Tag
 task_tags = Table(
