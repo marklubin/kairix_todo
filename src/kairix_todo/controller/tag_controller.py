@@ -1,4 +1,5 @@
 from flask import Blueprint, abort, jsonify, request
+from kairix_todo.utils.auth import check_api_key
 from sqlalchemy.orm import Session
 
 from kairix_todo.models import Tag, TagSchema
@@ -8,6 +9,7 @@ class TagController:
     def __init__(self, session: Session):
         self.session = session
         self.blueprint = Blueprint("tags", __name__, url_prefix="/tags")
+        self.blueprint.before_request(check_api_key)
         self.tag_schema = TagSchema()
         self.tags_schema = TagSchema(many=True)
 

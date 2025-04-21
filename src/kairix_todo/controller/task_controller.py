@@ -1,4 +1,5 @@
 from datetime import datetime
+from kairix_todo.utils.auth import check_api_key
 
 from flask import Blueprint, abort, jsonify, request
 from sqlalchemy.orm import Session
@@ -10,6 +11,7 @@ class TaskController:
     def __init__(self, session: Session):
         self.session = session
         self.blueprint = Blueprint("tasks", __name__, url_prefix="/tasks")
+        self.blueprint.before_request(check_api_key)
         self.task_schema = TaskSchema()
         self.tasks_schema = TaskSchema(many=True)
         self.reminder_schema = ReminderSchema()
@@ -70,7 +72,7 @@ class TaskController:
         if not task:
             abort(404, description="Task not found.")
 
-        task.completed = True
+        task.completed = True  # type: ignore[assignment]
         self.session.commit()
 
         return jsonify(self.task_schema.dump(task)), 200
@@ -129,10 +131,14 @@ class TaskController:
             abort(404, description="Task not found.")
 
         data = request.json
-        if data.get("remind_at") is not None:
-            if isinstance(data.get("remind_at"), str):
+        if data is None:
+            abort(400, description="Invalid input data.")
+        assert isinstance(data, dict)
+        raw_remind_at = data.get("remind_at")
+        if raw_remind_at is not None:
+            if isinstance(raw_remind_at, str):
                 data["remind_at"] = datetime.fromisoformat(
-                    data["remind_at"].replace("Z", "+00:00")
+                    raw_remind_at.replace("Z", "+00:00")
                 )
             else:
                 abort(
@@ -141,7 +147,7 @@ class TaskController:
                 )
 
         reminder = Reminder(**data)
-        reminder.task_id = task_id
+        reminder.task_id = task_id  # type: ignore[assignment]
         self.session.add(reminder)
         self.session.commit()
 
@@ -153,12 +159,13 @@ class TaskController:
             abort(404, description="Reminder not found.")
 
         data = request.json
-        if data is None:  # Check if data is not None
+        if data is None:
             abort(400, description="Invalid input data.")
-
-        if isinstance(data.get("remind_at"), str):
+        assert isinstance(data, dict)
+        raw_remind_at = data.get("remind_at")
+        if isinstance(raw_remind_at, str):
             data["remind_at"] = datetime.fromisoformat(
-                data["remind_at"].replace("Z", "+00:00")
+                raw_remind_at.replace("Z", "+00:00")
             )
 
         for key, value in data.items():

@@ -3,7 +3,7 @@ import os
 
 from flask import Flask, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
-from flask_swagger_ui import get_swaggerui_blueprint
+from flask_swagger_ui import get_swaggerui_blueprint  # type: ignore[import]
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 from kairix_todo.controller.search_controller import SearchController
